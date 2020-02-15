@@ -16,7 +16,9 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
     var pagenumber = 1
     var api = API()
     var dataBase = DataBase()
-    
+    var countCoil = 0
+    var pageAddition = 1
+    var lastPage = true
 
     @IBOutlet weak var collectionviewnp: UICollectionView!
    
@@ -61,7 +63,7 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .nowPlayingMovies)
                 let manageData = DataBase.dbManager
                 manageData.readFromCoreData(category: .nowPlayingMovies)
-                self.getMoviesArrayData = DataBase.nowPlayingMovies1
+                self.getMoviesArrayData += DataBase.nowPlayingMovies1
                    DispatchQueue.main.async {
                 self.collectionviewnp.reloadData()
                 }
@@ -102,9 +104,9 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
         }
         DispatchQueue.global().sync {
             if defaults.bool(forKey: "isnowPlayingDownloaded") == false{
-                 self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .nowPlayingMovies)
+                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .nowPlayingMovies)
             }
-           
+            
             DispatchQueue.main.asyncAfter(deadline: .now()+2.0, execute: {
                 let manageData = DataBase.dbManager
                 manageData.readFromCoreData(category: .nowPlayingMovies)
@@ -117,8 +119,30 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
 
     }
     
-    
-    
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height) && lastPage) {
+//            lastPage = false
+//            let value: Double = Double((countCoil+5)/20)
+//            if floor(value) == value {
+//                pageAddition = pageAddition + 1
+//            }
+//
+//            if pageAddition != 1 {
+//                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .nowPlayingMovies)
+//
+//                DispatchQueue.main.asyncAfter(deadline: .now()+1, execute: {
+//
+//                    let manageData = DataBase.dbManager
+//                    manageData.readFromCoreData(category: .nowPlayingMovies)
+//                    self.getMoviesArrayData = DataBase.nowPlayingMovies1
+//                    self.collectionviewnp.reloadData()
+//                })
+//            }
+//
+//
+//        }
+//
+//    }
     
     let screenName = "NowPlaying"
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -141,20 +165,9 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
 //        }
 //    }
     
-    //For Displaying Cateogry of movies
-//    enum Cateogry: CaseIterable{
-//        case NowPlaying
-//        case TopRated
-//        case Popular
-//        case UpComing
-//    }
-//
-//    var selectedCateogry = Cateogry.NowPlaying
-//    selectedCateogry = .NowPalying
-//    switch selectedCateogry{
-    //    case .NowPlaying:
-//    }
-//
+   
+    
+    
     /*
     // MARK: - Navigation
 
@@ -166,4 +179,5 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
     */
     
 
+    
 }

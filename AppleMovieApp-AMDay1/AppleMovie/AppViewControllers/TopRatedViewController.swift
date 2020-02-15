@@ -46,15 +46,13 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
 //        populartableview.reloadData()
         
         let defaults = UserDefaults.standard
-        
         if defaults.bool(forKey: "isTopRatedDownloaded") == false
         {
             defaults.set(true, forKey: "isTopRatedDownloaded")
         }
-        
         DispatchQueue.global().sync {
             if defaults.bool(forKey: "isTopRatedDownloaded") == false{
-                 self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: 1, category: .topRatedMovies)
+                 self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .topRatedMovies)
             }
            
             DispatchQueue.main.asyncAfter(deadline: .now()+1.0, execute: {
@@ -63,23 +61,23 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
                 
                 
             })
-            DispatchQueue.main.asyncAfter(deadline: .now()+3.0, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now()+2.0, execute: {
                 self.getMoviesArrayData = DataBase.topRatedMovies1
               self.populartableview.reloadData()
             })
             
-            DispatchQueue.main.asyncAfter(deadline: .now()+5.0, execute: {
-                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: 1, category: .popularMovies)
+            DispatchQueue.main.asyncAfter(deadline: .now()+3.0, execute: {
+                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .popularMovies)
             })
             
             
-            DispatchQueue.main.asyncAfter(deadline: .now()+7.0, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now()+4.0, execute: {
                 let manageData = DataBase.dbManager
                 manageData.readFromCoreData(category: .popularMovies)
                 
                 
             })
-            DispatchQueue.main.asyncAfter(deadline: .now()+9.0, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now()+5.0, execute: {
                 self.popularMoviesArray = DataBase.popularMovies1
                 self.populartableview.reloadData()
             })
@@ -128,9 +126,8 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
                 self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .topRatedMovies)
                 let manageData = DataBase.dbManager
                 manageData.readFromCoreData(category: .topRatedMovies)
-                self.getMoviesArrayData = DataBase.topRatedMovies1
-               // self.pageReload(pagenumber: self.pagenumber, moviescateogry: "top_rated")
-                
+                self.getMoviesArrayData += DataBase.topRatedMovies1
+                self.toprtdcollectionView.reloadData()
             }
         }
     }
@@ -225,6 +222,12 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
             if indexPath.row == self.getMoviesArrayData.count-1 {
                 self.pagenumber = self.pagenumber + 1
                 self.pageReload(pagenumber: self.pagenumber, moviescateogry: "popular")
+                
+                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .popularMovies)
+                let manageData = DataBase.dbManager
+                manageData.readFromCoreData(category: .popularMovies)
+                self.popularMoviesArray += DataBase.popularMovies1
+                self.populartableview.reloadData()
                 
             }
         }

@@ -84,7 +84,7 @@ class UpComingViewController: UIViewController,UITableViewDelegate,UITableViewDa
                 self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .upcomingMovies)
                 let manageData = DataBase.dbManager
                 manageData.readFromCoreData(category: .upcomingMovies)
-                self.getMoviesArrayData = DataBase.upcomingMovies1
+                self.getMoviesArrayData += DataBase.upcomingMovies1
                 self.upcomingtableV.reloadData()
               //  self.getPageCount(pagenumber: self.pagenumber, moviescateogry: "upcoming")
             }
@@ -100,6 +100,7 @@ class UpComingViewController: UIViewController,UITableViewDelegate,UITableViewDa
         //Detailsfromupcoming
         performSegue(withIdentifier: "Detailsfromupcoming", sender: movie)
     }
+    
     let name = "UpComing"
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "Detailsfromupcoming") {
