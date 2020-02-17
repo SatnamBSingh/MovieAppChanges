@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 enum moviesGroup: String{
     case nowPlayingMovies = "now_playing"
     case topRatedMovies = "top_rated"
@@ -18,8 +17,6 @@ enum moviesGroup: String{
 
 class API {
     
-    
-    
     let moviesURL = "https://api.themoviedb.org/3/movie/"
     let apiKey = "api_key=60af9fe8e3245c53ad9c4c0af82d56d6"
     let imageUrl = "https://image.tmdb.org/t/p/w200"
@@ -27,7 +24,7 @@ class API {
     private var dB = DataBase.dbManager
     private var movieType: moviesGroup?
     
-
+    
     // fetch movies from url
     func fetchingMovies(movieLanguage: String, pageNumber: Int, category: moviesGroup){
         self.movieType = category
@@ -76,7 +73,7 @@ class API {
             let decoder = JSONDecoder()
             let movieDetails = try decoder.decode(MoreResults.self, from: data)
             dB.insertData(movies: movieDetails.results!, category: movieType!)
-
+            
         }
         catch(let error){
             print(error.localizedDescription)

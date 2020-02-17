@@ -18,17 +18,30 @@ class SearchViewController: UIViewController,UISearchDisplayDelegate,UISearchBar
     var movies:AppleMoviesData?
     var movieDescription:String!
     var pagenumber = 1
-    
+    var api = API()
     var searchMovies = [AppleMoviesData]()
     var searchActive = true
 
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        SearchBar.delegate = self
+        tableviewsearches.delegate = self
+        tableviewsearches.dataSource = self
+        pagenumber = 1
+        // getPageCount(pagenumber: pagenumber, moviescateogry: "search")
+        
+        // Do any additional setup after loading the view.
+    }
+    
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return searchMovies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    
+        
         if searchActive {
             let cell = tableView.dequeueReusableCell(withIdentifier: "SearchesTableViewCell", for: indexPath) as! SearchesTableViewCell
             let movie = searchMovies[indexPath.row]
@@ -48,8 +61,8 @@ class SearchViewController: UIViewController,UISearchDisplayDelegate,UISearchBar
             cell2.searchpopularitylbl.text = "\(moviestoShow.popularity!)"
             cell2.searchvotecnt.text = "\(moviestoShow.vote_count!)"
             DispatchQueue.main.async {
-                cell2.serachimgvw2.kf.setImage(with: URL(string: JsonParseData.jsonMoviesData.imageurl + moviestoShow.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
-                cell2.serachimgvw1.kf.setImage(with: URL(string: JsonParseData.jsonMoviesData.imageurl + moviestoShow.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
+                cell2.serachimgvw2.kf.setImage(with: URL(string: self.api.imageUrl + moviestoShow.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
+                cell2.serachimgvw1.kf.setImage(with: URL(string: self.api.imageUrl + moviestoShow.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
             }
             
             return cell2
@@ -59,7 +72,7 @@ class SearchViewController: UIViewController,UISearchDisplayDelegate,UISearchBar
         return searchActive ? 51 : 391
     }
     
-
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         DispatchQueue.global().async {
             if indexPath.row == self.searchMovies.count-1 {
@@ -88,7 +101,7 @@ class SearchViewController: UIViewController,UISearchDisplayDelegate,UISearchBar
         }
     }
     
-     
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "detailsfromsearch") {
@@ -120,36 +133,27 @@ class SearchViewController: UIViewController,UISearchDisplayDelegate,UISearchBar
             self.tableviewsearches.reloadData()
         }
     }
-
+    
     func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
         searchActive = true;
     }
-
+    
     func searchBarTextDidEndEditing(searchBar: UISearchBar) {
         searchActive = false;
     }
-
+    
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
         searchActive = false;
     }
-
+    
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         searchActive = false;
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        SearchBar.delegate = self
-        tableviewsearches.delegate = self
-        tableviewsearches.dataSource = self
-        pagenumber = 1
-       // getPageCount(pagenumber: pagenumber, moviescateogry: "search")
-
-        // Do any additional setup after loading the view.
-    }
+    
     
     func getsSearchMovies(pagenumber: Int, serachtext: String){
-       
+        
         Searchjson.searchMoviesData.jsonURLS(string: serachtext, page: pagenumber, completetion: { (success, model) in
             guard success else{
                 return

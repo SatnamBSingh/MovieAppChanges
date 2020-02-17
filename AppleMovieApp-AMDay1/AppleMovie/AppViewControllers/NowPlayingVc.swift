@@ -16,12 +16,39 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
     var pagenumber = 1
     var api = API()
     var dataBase = DataBase()
-    var countCoil = 0
-    var pageAddition = 1
-    var lastPage = true
+    
 
     @IBOutlet weak var collectionviewnp: UICollectionView!
    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        collectionviewnp.delegate = self
+        collectionviewnp.dataSource = self
+        pagenumber = 1
+        // JsonParseData.JsonMoviesData.JsonURLS(Moviescateogry: "now_playing", page: pagenumber)
+        //getMoviesArrayData = JsonParseData.JsonMoviesData.MoviesDataArray
+        // getPageCount(pagenumber: pagenumber, moviescateogry: "now_playing")
+        
+        let defaults = UserDefaults.standard
+        if defaults.bool(forKey: "isnowPlayingDownloaded") == false
+        {
+            defaults.set(true, forKey: "isnowPlayingDownloaded")
+            self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .nowPlayingMovies)
+
+        }
+       // DispatchQueue.global().sync {
+            DispatchQueue.main.asyncAfter(deadline: .now()+2.0, execute: {
+                let manageData = DataBase.dbManager
+                manageData.readFromCoreData(category: .nowPlayingMovies)
+            })
+            DispatchQueue.main.asyncAfter(deadline: .now()+5.0, execute: {
+                self.getMoviesArrayData = DataBase.nowPlayingMovies1
+                self.collectionviewnp.reloadData()
+            })
+        //}
+        
+    }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -50,17 +77,16 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
         cell.releaselabel.text = moviestoShowinCell.release_date
         cell.ratinglabel.text = "\(moviestoShowinCell.vote_average ?? 0)"
         cell.votinglabel.text = "\(moviestoShowinCell.vote_count ?? 0)"
-        cell.movieimageview.kf.setImage(with: URL(string: JsonParseData.jsonMoviesData.imageurl + moviestoShowinCell.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
+        cell.movieimageview.kf.setImage(with: URL(string: api.imageUrl + moviestoShowinCell.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
         
         return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         DispatchQueue.global().async {
-            if indexPath.row == self.getMoviesArrayData.count-1 {
+             if indexPath.row == self.getMoviesArrayData.count-1 {
                 self.pagenumber = self.pagenumber + 1
-                
-               self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .nowPlayingMovies)
+                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .nowPlayingMovies)
                 let manageData = DataBase.dbManager
                 manageData.readFromCoreData(category: .nowPlayingMovies)
                 self.getMoviesArrayData += DataBase.nowPlayingMovies1
@@ -88,61 +114,6 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
         return CGSize (width: self.collectionviewnp.frame.width-40, height: self.collectionviewnp.frame.height-190)
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        collectionviewnp.delegate = self
-        collectionviewnp.dataSource = self
-        pagenumber = 1
-        // JsonParseData.JsonMoviesData.JsonURLS(Moviescateogry: "now_playing", page: pagenumber)
-        //getMoviesArrayData = JsonParseData.JsonMoviesData.MoviesDataArray
-      //  getPageCount(pagenumber: pagenumber, moviescateogry: "now_playing")
-       
-        let defaults = UserDefaults.standard
-        if defaults.bool(forKey: "isnowPlayingDownloaded") == false
-        {
-            defaults.set(true, forKey: "isnowPlayingDownloaded")
-        }
-        DispatchQueue.global().sync {
-            if defaults.bool(forKey: "isnowPlayingDownloaded") == false{
-                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .nowPlayingMovies)
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now()+2.0, execute: {
-                let manageData = DataBase.dbManager
-                manageData.readFromCoreData(category: .nowPlayingMovies)
-            })
-            DispatchQueue.main.asyncAfter(deadline: .now()+4.0, execute: {
-                self.getMoviesArrayData = DataBase.nowPlayingMovies1
-                self.collectionviewnp.reloadData()
-            })
-        }
-
-    }
-    
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height) && lastPage) {
-//            lastPage = false
-//            let value: Double = Double((countCoil+5)/20)
-//            if floor(value) == value {
-//                pageAddition = pageAddition + 1
-//            }
-//
-//            if pageAddition != 1 {
-//                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .nowPlayingMovies)
-//
-//                DispatchQueue.main.asyncAfter(deadline: .now()+1, execute: {
-//
-//                    let manageData = DataBase.dbManager
-//                    manageData.readFromCoreData(category: .nowPlayingMovies)
-//                    self.getMoviesArrayData = DataBase.nowPlayingMovies1
-//                    self.collectionviewnp.reloadData()
-//                })
-//            }
-//
-//
-//        }
-//
-//    }
     
     let screenName = "NowPlaying"
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -155,6 +126,7 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
             detailsVc.getMovieCatoegry = screenName
         }
     }
+    
 //    func getPageCount(pagenumber: Int, moviescateogry: String){
 //
 //        self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .nowPlayingMovies)
@@ -164,8 +136,6 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
 //            self.collectionviewnp.reloadData()
 //        }
 //    }
-    
-   
     
     
     /*

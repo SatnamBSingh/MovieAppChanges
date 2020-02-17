@@ -22,15 +22,10 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
     
     @IBOutlet var populartableview: UITableView!
     @IBOutlet var toprtdcollectionView: UICollectionView!
-    
-    
     @IBAction func seeAllButtton(_ sender: Any) {
         let showallMovies = self.storyboard?.instantiateViewController(withIdentifier: "ShowAllMoviesViewController") as! ShowAllMoviesViewController
         navigationController?.pushViewController(showallMovies, animated: true)
     }
-    
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,41 +44,36 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
         if defaults.bool(forKey: "isTopRatedDownloaded") == false
         {
             defaults.set(true, forKey: "isTopRatedDownloaded")
+            self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .topRatedMovies)
         }
-        DispatchQueue.global().sync {
-            if defaults.bool(forKey: "isTopRatedDownloaded") == false{
-                 self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .topRatedMovies)
-            }
-           
-            DispatchQueue.main.asyncAfter(deadline: .now()+1.0, execute: {
-                let manageData = DataBase.dbManager
-                manageData.readFromCoreData(category: .topRatedMovies)
-                
-                
-            })
-            DispatchQueue.main.asyncAfter(deadline: .now()+2.0, execute: {
-                self.getMoviesArrayData = DataBase.topRatedMovies1
-              self.populartableview.reloadData()
-            })
+        //  DispatchQueue.global().sync {
+        //Api calling for TopRated
+        DispatchQueue.main.asyncAfter(deadline: .now()+1.0, execute: {
+            let manageData = DataBase.dbManager
+            manageData.readFromCoreData(category: .topRatedMovies)
+        })
+        DispatchQueue.main.asyncAfter(deadline: .now()+2.5, execute: {
+            self.getMoviesArrayData = DataBase.topRatedMovies1
+            self.populartableview.reloadData()
+        })
+        
+        //Api calling for popularMovies
+        DispatchQueue.main.asyncAfter(deadline: .now()+3.5, execute: {
+            self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .popularMovies)
+        })
+        DispatchQueue.main.asyncAfter(deadline: .now()+4.5, execute: {
+            let manageData = DataBase.dbManager
+            manageData.readFromCoreData(category: .popularMovies)
             
-            DispatchQueue.main.asyncAfter(deadline: .now()+3.0, execute: {
-                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .popularMovies)
-            })
             
-            
-            DispatchQueue.main.asyncAfter(deadline: .now()+4.0, execute: {
-                let manageData = DataBase.dbManager
-                manageData.readFromCoreData(category: .popularMovies)
-                
-                
-            })
-            DispatchQueue.main.asyncAfter(deadline: .now()+5.0, execute: {
-                self.popularMoviesArray = DataBase.popularMovies1
-                self.populartableview.reloadData()
-            })
-        }
-    
-
+        })
+        DispatchQueue.main.asyncAfter(deadline: .now()+5.0, execute: {
+            self.popularMoviesArray = DataBase.popularMovies1
+            self.populartableview.reloadData()
+        })
+        // }
+        
+        
     }
    
     
@@ -105,8 +95,8 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
         cell.topratedDescriptionlbl.text = moviestoShowinCell.overview
         cell.topratedvoteavglbl.text = "\(moviestoShowinCell.vote_average ?? 0)"
         cell.topvotecountlbl.text = "\(moviestoShowinCell.vote_count ?? 0)"
-        cell.toprtdImageview.kf.setImage(with: URL(string: JsonParseData.jsonMoviesData.imageurl + moviestoShowinCell.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
- 
+        cell.toprtdImageview.kf.setImage(with: URL(string: api.imageUrl + moviestoShowinCell.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
+        
         return cell
     }
     
@@ -120,16 +110,18 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        DispatchQueue.global().async {
-            if indexPath.row == self.getMoviesArrayData.count-1 {
-                self.pagenumber = self.pagenumber + 1
-                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .topRatedMovies)
-                let manageData = DataBase.dbManager
-                manageData.readFromCoreData(category: .topRatedMovies)
-                self.getMoviesArrayData += DataBase.topRatedMovies1
-                self.toprtdcollectionView.reloadData()
+         DispatchQueue.global().async {
+        if indexPath.row == self.getMoviesArrayData.count-1 {
+            self.pagenumber = self.pagenumber + 1
+            self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .topRatedMovies)
+            let manageData = DataBase.dbManager
+            manageData.readFromCoreData(category: .topRatedMovies)
+            self.popularMoviesArray += DataBase.topRatedMovies1
+           // self.toprtdcollectionView.reloadData()
+
             }
         }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -153,10 +145,10 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
             let detailsVc =  segue.destination as! DetailsViewController
             detailsVc.movie = movie
             detailsVc.getMovieCatoegry = screenname
-
+            
         }
     }
-
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -164,7 +156,7 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return popularMoviesArray.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         
@@ -175,17 +167,10 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
             let moviestoShowinCell = popularMoviesArray[indexPath.row]
             cell.movienamelbl.text = moviestoShowinCell.title
             cell.popularitylbl.text = "\(moviestoShowinCell.popularity!)"
-            cell.releaseddatelbl.text = "\(moviestoShowinCell.release_date)"
+            cell.releaseddatelbl.text = moviestoShowinCell.release_date
             cell.votecountlbl.text = "\(moviestoShowinCell.vote_count!)"
             cell.selectionStyle = .none
-            cell.MVImageView.kf.setImage(with: URL(string: JsonParseData.jsonMoviesData.imageurl + moviestoShowinCell.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
-            
-            if indexPath.row != 1 {
-                
-            }
-            else {
-                
-            }
+            cell.MVImageView.kf.setImage(with: URL(string: api.imageUrl + moviestoShowinCell.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
             
             return cell
             
@@ -218,40 +203,40 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        DispatchQueue.global().async {
-            if indexPath.row == self.getMoviesArrayData.count-1 {
-                self.pagenumber = self.pagenumber + 1
-                self.pageReload(pagenumber: self.pagenumber, moviescateogry: "popular")
-                
-                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .popularMovies)
-                let manageData = DataBase.dbManager
-                manageData.readFromCoreData(category: .popularMovies)
-                self.popularMoviesArray += DataBase.popularMovies1
-                self.populartableview.reloadData()
-                
-            }
-        }
-    }
-    func pageReload(pagenumber: Int, moviescateogry: String){
-        
-        JsonParseData.jsonMoviesData.jsonURLS(Moviescateogry: moviescateogry, page: pagenumber)
-        getMoviesArrayData += JsonParseData.jsonMoviesData.moviesDataArray
-        DispatchQueue.main.async {
+        // DispatchQueue.global().async {
+        if indexPath.row == self.getMoviesArrayData.count-1 {
+            self.pagenumber = self.pagenumber + 1
+            //self.pageReload(pagenumber: self.pagenumber, moviescateogry: "popular")
+            
+            self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .popularMovies)
+            let manageData = DataBase.dbManager
+            manageData.readFromCoreData(category: .popularMovies)
+            self.popularMoviesArray += DataBase.popularMovies1
             self.populartableview.reloadData()
+            
         }
+        // }
     }
+//    func pageReload(pagenumber: Int, moviescateogry: String){
+//
+//        JsonParseData.jsonMoviesData.jsonURLS(Moviescateogry: moviescateogry, page: pagenumber)
+//        getMoviesArrayData += JsonParseData.jsonMoviesData.moviesDataArray
+//        DispatchQueue.main.async {
+//            self.populartableview.reloadData()
+//        }
+//    }
 }
-extension TopRatedViewController:UIScrollViewDelegate{
-
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
-        positionScroll = self.populartableview.contentOffset.y
-    }
-    
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        if self.populartableview.contentOffset.y > self.positionScroll || self.populartableview.contentOffset.y < self.positionScroll{
-            self.populartableview.isPagingEnabled = true
-        } else{
-            self.populartableview.isPagingEnabled = false
-        }
-    }
-}
+//extension TopRatedViewController:UIScrollViewDelegate{
+//
+//    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+//        positionScroll = self.populartableview.contentOffset.y
+//    }
+//
+//    func scrollViewDidScroll(scrollView: UIScrollView) {
+//        if self.populartableview.contentOffset.y > self.positionScroll || self.populartableview.contentOffset.y < self.positionScroll{
+//            self.populartableview.isPagingEnabled = true
+//        } else{
+//            self.populartableview.isPagingEnabled = false
+//        }
+//    }
+//}

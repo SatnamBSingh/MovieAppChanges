@@ -11,7 +11,6 @@ import CoreData
 import UIKit
 class DataBase {
     
-    
     static let dbManager = DataBase()
     static var nowPlayingMovies1 = [AppleMoviesData]()
     static var topRatedMovies1 = [AppleMoviesData]()
@@ -19,7 +18,6 @@ class DataBase {
     static var upcomingMovies1 = [AppleMoviesData]()
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var moviesData:AppleMoviesData?
-    
     var movieType: moviesGroup?
     
     //Insert into coredata
@@ -39,7 +37,7 @@ class DataBase {
                 let orgLang = data.original_language
                 let ids = data.id
                 let img = data.poster_path
-                let discription = data.overview
+                let description = data.overview
                 let releasedate = data.release_date
                 let movisCatoegry = category.rawValue
                 
@@ -49,10 +47,9 @@ class DataBase {
                 results.setValue(orgLang, forKey: "original_language")
                 results.setValue(ids, forKey: "id")
                 results.setValue(img, forKey: "poster_path")
-                results.setValue(discription, forKey: "overview")
+                results.setValue(description, forKey: "overview")
                 results.setValue(releasedate, forKey: "releaseDate")
                 results.setValue(movisCatoegry, forKey: "movieCateogory")
-                
                 
             }
             
@@ -60,11 +57,13 @@ class DataBase {
             {
                 try context.save()
                 print(context)
+                print("insertion: successful")
+                
                 
             }
             catch
             {
-                print("insertion: successful")
+                print(error.localizedDescription)
             }
         }
         
@@ -102,8 +101,6 @@ class DataBase {
             {
                 var fetchdata: AppleMoviesData = AppleMoviesData()
                 
-            
-                
                 fetchdata.popularity = data.value(forKey: "popularity") as? Double
                 fetchdata.vote_count = data.value(forKey: "vote_count") as? Int
                 fetchdata.title = data.value(forKey: "original_title") as? String
@@ -114,7 +111,7 @@ class DataBase {
                 fetchdata.release_date = data.value(forKey: "releaseDate") as? String
                 
                 print(fetchdata.title)
-               // print(fetchdata.overview)
+                // print(fetchdata.overview)
                 
                 switch category{
                 case .nowPlayingMovies:
@@ -126,7 +123,7 @@ class DataBase {
                 case .upcomingMovies:
                     DataBase.upcomingMovies1.append(fetchdata)
                 }
-            
+                
             }
             
         }

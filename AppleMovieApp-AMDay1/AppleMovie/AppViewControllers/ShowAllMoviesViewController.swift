@@ -16,6 +16,33 @@ class ShowAllMoviesViewController: UIViewController,UITableViewDelegate,UITableV
     var api = API()
     var dataBase = DataBase()
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        navigationController?.navigationBar.isHidden = false
+        showAllMoviesTable.delegate = self
+        showAllMoviesTable.dataSource = self
+        pagenumber = 1
+        // JsonParseData.jsonMoviesData.jsonURLS(Moviescateogry: "top_rated", page: pagenumber)
+        // getMoviesArrayData = JsonParseData.jsonMoviesData.moviesDataArray
+        // showAllMoviesTable.reloadData()
+        
+        DispatchQueue.global().async {
+            
+            self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: 1, category: .topRatedMovies)
+            DispatchQueue.main.asyncAfter(deadline: .now()+1.0, execute: {
+                let manageData = DataBase.dbManager
+                manageData.readFromCoreData(category: .topRatedMovies)
+                
+                
+            })
+            DispatchQueue.main.asyncAfter(deadline: .now()+2.0, execute: {
+                self.getMoviesArrayData = DataBase.topRatedMovies1
+                self.showAllMoviesTable.reloadData()
+            })
+        }
+        // Do any additional setup after loading the view.
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return getMoviesArrayData.count
     }
@@ -26,7 +53,7 @@ class ShowAllMoviesViewController: UIViewController,UITableViewDelegate,UITableV
         cell.showAllMoviename.text = MoviestoShowinCell.title
         cell.releaseDate.text = MoviestoShowinCell.release_date
         cell.voteCount.text = "\(MoviestoShowinCell.vote_count ?? 0)"
-        cell.showallImage.kf.setImage(with: URL(string: JsonParseData.jsonMoviesData.imageurl + MoviestoShowinCell.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
+        cell.showallImage.kf.setImage(with: URL(string: api.imageUrl + MoviestoShowinCell.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
     
         return cell
     }
@@ -35,12 +62,15 @@ class ShowAllMoviesViewController: UIViewController,UITableViewDelegate,UITableV
         DispatchQueue.global().async {
             if indexPath.row == self.getMoviesArrayData.count-1 {
                 self.pagenumber = self.pagenumber + 1
-                self.getNextPage(pagenumber: self.pagenumber, moviescateogry: "top_rated")
-                
+                // self.getNextPage(pagenumber: self.pagenumber, moviescateogry: "top_rated")
+                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: 1, category: .topRatedMovies)
+                //                        let manageData = DataBase.dbManager
+                //                        manageData.readFromCoreData(category: .topRatedMovies)
+                self.getMoviesArrayData += DataBase.topRatedMovies1
             }
         }
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentCell = tableView.cellForRow(at: indexPath) as! ShowAllTableViewCell
         let movie = getMoviesArrayData[indexPath.row]
@@ -65,41 +95,27 @@ class ShowAllMoviesViewController: UIViewController,UITableViewDelegate,UITableV
     
     @IBOutlet weak var showAllMoviesTable: UITableView!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        navigationController?.navigationBar.isHidden = false
-        showAllMoviesTable.delegate = self
-        showAllMoviesTable.dataSource = self
-        pagenumber = 1
-       // JsonParseData.jsonMoviesData.jsonURLS(Moviescateogry: "top_rated", page: pagenumber)
-       // getMoviesArrayData = JsonParseData.jsonMoviesData.moviesDataArray
-       // showAllMoviesTable.reloadData()
-        
-        DispatchQueue.global().async {
-            
-            self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: 1, category: .topRatedMovies)
-            DispatchQueue.main.asyncAfter(deadline: .now()+1.0, execute: {
-                let manageData = DataBase.dbManager
-                manageData.readFromCoreData(category: .topRatedMovies)
-                
-                
-            })
-            DispatchQueue.main.asyncAfter(deadline: .now()+3.0, execute: {
-                self.getMoviesArrayData = DataBase.topRatedMovies1
-                self.showAllMoviesTable.reloadData()
-            })
-        }
-        // Do any additional setup after loading the view.
-    }
+   
     
-    func getNextPage(pagenumber: Int, moviescateogry: String){
-        
-        JsonParseData.jsonMoviesData.jsonURLS(Moviescateogry: moviescateogry, page: pagenumber)
-        getMoviesArrayData += JsonParseData.jsonMoviesData.moviesDataArray
-        DispatchQueue.main.async {
-            self.showAllMoviesTable.reloadData()
-        }
-    }
+//    func getNextPage(pagenumber: Int, moviescateogry: String){
+//
+//        JsonParseData.jsonMoviesData.jsonURLS(Moviescateogry: moviescateogry, page: pagenumber)
+//        getMoviesArrayData += JsonParseData.jsonMoviesData.moviesDataArray
+//        DispatchQueue.main.async {
+//            self.showAllMoviesTable.reloadData()
+//        }
+//    }
+    
+//    func getNextPage(pagenumber: Int, moviescateogry: String){
+//
+//        self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: 1, category: .topRatedMovies)
+//        let manageData = DataBase.dbManager
+//        manageData.readFromCoreData(category: .topRatedMovies)
+//        self.getMoviesArrayData = DataBase.topRatedMovies1
+//        DispatchQueue.main.async {
+//            self.showAllMoviesTable.reloadData()
+//        }
+//    }
 
     //showAlltoDetails
 

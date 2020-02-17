@@ -129,6 +129,7 @@
 				E42538AF23CDA2CC00B68914 /* SearchViewController.swift */,
 				E479627023CC3B970053527D /* ViewController.swift */,
 				E460633123F3D885000F0F70 /* ShowAllMoviesViewController.swift */,
+				E459030A23D5671100D7D278 /* Models + Structures + JsonParsing  */,
 			);
 			path = AppViewControllers;
 			sourceTree = "<group>";
@@ -190,7 +191,6 @@
 			isa = PBXGroup;
 			children = (
 				E47D5EE923E3E62D00840F59 /* CoreDataManager */,
-				E459030A23D5671100D7D278 /* Models + Structures + JsonParsing  */,
 				E438E49B23D33A250083DE7A /* TableViewCell + CollectionViewCell */,
 				E438E49A23D339B00083DE7A /* AppViewControllers */,
 				E479626E23CC3B970053527D /* AppDelegate.swift */,

@@ -10,6 +10,7 @@ import UIKit
 import Kingfisher
 class DetailsViewController: UIViewController {
 
+    var api = API()
     var getMoviesArrayData = [AppleMoviesData]()
     var movie:AppleMoviesData? 
     var getMovieCatoegry:String?
@@ -35,7 +36,7 @@ class DetailsViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
         movienamelabel.text = movie!.title
         popularity.text = "\(movie!.popularity ?? 0)"
-        movieimageview.kf.setImage(with: URL(string: JsonParseData.jsonMoviesData.imageurl + movie!.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
+        movieimageview.kf.setImage(with: URL(string: api.imageUrl + movie!.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
         votecountlabel.text = "\(movie!.vote_count ?? 0)"
         descriptionlabel.text = movie?.overview
         languagelabel.text = movie?.original_language
@@ -46,7 +47,7 @@ class DetailsViewController: UIViewController {
         
         // Do any additional setup after loading the view.
     }
-
+    
     /*
     // MARK: - Navigation
 

@@ -32,17 +32,14 @@ class UpComingViewController: UIViewController,UITableViewDelegate,UITableViewDa
         if defaults.bool(forKey: "isupComingDownloaded") == false
         {
             defaults.set(true, forKey: "isupComingDownloaded")
+            self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .upcomingMovies)
+            
         }
         DispatchQueue.global().sync {
-            if defaults.bool(forKey: "isupComingDownloaded") == false{
-                self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: pagenumber, category: .upcomingMovies)
-
-            }
+            
             DispatchQueue.main.asyncAfter(deadline: .now()+2.0, execute: {
                 let manageData = DataBase.dbManager
                 manageData.readFromCoreData(category: .upcomingMovies)
-                
-                
             })
             DispatchQueue.main.asyncAfter(deadline: .now()+4.0, execute: {
                 self.getMoviesArrayData = DataBase.upcomingMovies1
@@ -66,13 +63,13 @@ class UpComingViewController: UIViewController,UITableViewDelegate,UITableViewDa
         cell.upcomingImgView.clipsToBounds = true
         let moviestoShow = getMoviesArrayData[indexPath.row]
         cell.mvnameUpcm.text = moviestoShow.title
-        cell.releasedateupcm.text = "\(moviestoShow.release_date)"
+        cell.releasedateupcm.text = moviestoShow.release_date
         cell.popularityupcm.text = "\(moviestoShow.popularity ?? 0)"
         cell.votecountupcm.text = "\(moviestoShow.vote_count ?? 0)"
         cell.selectionStyle = .none
-        cell.upcomingImgView.kf.setImage(with: URL(string: JsonParseData.jsonMoviesData.imageurl + moviestoShow.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
+        cell.upcomingImgView.kf.setImage(with: URL(string: api.imageUrl + moviestoShow.poster_path!), placeholder: nil, options: [], progressBlock: nil, completionHandler: nil)
         
-
+        
         return cell
     }
     
@@ -80,14 +77,16 @@ class UpComingViewController: UIViewController,UITableViewDelegate,UITableViewDa
         DispatchQueue.global().async {
             if indexPath.row == self.getMoviesArrayData.count-1 {
                 self.pagenumber = self.pagenumber + 1
-                
                 self.api.fetchingMovies(movieLanguage: "en-US", pageNumber: self.pagenumber, category: .upcomingMovies)
                 let manageData = DataBase.dbManager
                 manageData.readFromCoreData(category: .upcomingMovies)
                 self.getMoviesArrayData += DataBase.upcomingMovies1
-                self.upcomingtableV.reloadData()
-              //  self.getPageCount(pagenumber: self.pagenumber, moviescateogry: "upcoming")
+                //  self.getPageCount(pagenumber: self.pagenumber, moviescateogry: "upcoming")
             }
+        }
+        DispatchQueue.main.async {
+            self.upcomingtableV.reloadData()
+            
         }
     }
     
