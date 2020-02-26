@@ -136,7 +136,7 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
         return 2
     }
     
-    let screenname = "TopRated"
+   // let screenname = "TopRated"
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "toprateddetails") {
             guard let movie  = sender as? AppleMoviesData else{
@@ -144,7 +144,7 @@ class TopRatedViewController: UIViewController,UITableViewDelegate,UITableViewDa
             }
             let detailsVc =  segue.destination as! DetailsViewController
             detailsVc.movie = movie
-            detailsVc.getMovieCatoegry = screenname
+           // detailsVc.getMovieCatoegry = screenname
             
         }
     }

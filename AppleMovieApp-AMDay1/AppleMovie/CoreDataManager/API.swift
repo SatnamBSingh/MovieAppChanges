@@ -19,7 +19,7 @@ class API {
     
     let moviesURL = "https://api.themoviedb.org/3/movie/"
     let apiKey = "api_key=60af9fe8e3245c53ad9c4c0af82d56d6"
-    let imageUrl = "https://image.tmdb.org/t/p/w200"
+    let imageUrl = "https://image.tmdb.org/t/p/w500"
     
     private var dB = DataBase.dbManager
     private var movieType: moviesGroup?

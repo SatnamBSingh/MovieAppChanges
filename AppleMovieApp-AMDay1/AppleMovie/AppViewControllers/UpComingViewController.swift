@@ -100,7 +100,7 @@ class UpComingViewController: UIViewController,UITableViewDelegate,UITableViewDa
         performSegue(withIdentifier: "Detailsfromupcoming", sender: movie)
     }
     
-    let name = "UpComing"
+   // let name = "UpComing"
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "Detailsfromupcoming") {
             guard let movie  = sender as? AppleMoviesData else{
@@ -108,7 +108,7 @@ class UpComingViewController: UIViewController,UITableViewDelegate,UITableViewDa
             }
             let detailsvc =  segue.destination as! DetailsViewController
             detailsvc.movie = movie
-            detailsvc.getMovieCatoegry = name
+            //detailsvc.getMovieCatoegry = name
         }
     }
     

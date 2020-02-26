@@ -126,9 +126,9 @@
 				E42538B523CDD3D500B68914 /* TopRatedViewController.swift */,
 				E4C6AFCC23CF23D70080FE4F /* UpComingViewController.swift */,
 				E42538AD23CD930A00B68914 /* DetailsViewController.swift */,
-				E42538AF23CDA2CC00B68914 /* SearchViewController.swift */,
-				E479627023CC3B970053527D /* ViewController.swift */,
 				E460633123F3D885000F0F70 /* ShowAllMoviesViewController.swift */,
+				E479627023CC3B970053527D /* ViewController.swift */,
+				E42538AF23CDA2CC00B68914 /* SearchViewController.swift */,
 				E459030A23D5671100D7D278 /* Models + Structures + JsonParsing  */,
 			);
 			path = AppViewControllers;

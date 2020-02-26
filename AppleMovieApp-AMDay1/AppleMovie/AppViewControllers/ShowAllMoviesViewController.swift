@@ -80,7 +80,7 @@ class ShowAllMoviesViewController: UIViewController,UITableViewDelegate,UITableV
         performSegue(withIdentifier: "showAlltoDetails", sender: movie)
     }
     
-    let screenName = "Showing TopRated"
+    //let screenName = "Showing TopRated"
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "showAlltoDetails") {
             guard let movie  = sender as? AppleMoviesData else{
@@ -88,7 +88,7 @@ class ShowAllMoviesViewController: UIViewController,UITableViewDelegate,UITableV
             }
             let detailsVc =  segue.destination as! DetailsViewController
             detailsVc.movie = movie
-            detailsVc.getMovieCatoegry = screenName
+           // detailsVc.getMovieCatoegry = screenName
             
         }
     }

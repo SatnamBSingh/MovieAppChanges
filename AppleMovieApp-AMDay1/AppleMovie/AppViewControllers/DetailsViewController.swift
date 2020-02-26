@@ -41,9 +41,9 @@ class DetailsViewController: UIViewController {
         descriptionlabel.text = movie?.overview
         languagelabel.text = movie?.original_language
         cancelbuttonoutlet.layer.cornerRadius = 15
-        if let receiveName = getMovieCatoegry{
-            moviescateogrylbl.text = receiveName
-        }
+        //if let receiveName = getMovieCatoegry{
+           // moviescateogrylbl.text = receiveName
+        //}
         
         // Do any additional setup after loading the view.
     }

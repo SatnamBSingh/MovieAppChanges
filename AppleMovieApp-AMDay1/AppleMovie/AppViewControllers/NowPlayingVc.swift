@@ -115,7 +115,7 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
     }
     
     
-    let screenName = "NowPlaying"
+    //let screenName = "NowPlaying"
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "details") {
             guard let movie  = sender as? AppleMoviesData else{
@@ -123,7 +123,7 @@ class NowPlayingVc: UIViewController, UICollectionViewDelegate, UICollectionView
             }
             let detailsVc =  segue.destination as! DetailsViewController
             detailsVc.movie = movie
-            detailsVc.getMovieCatoegry = screenName
+            //detailsVc.getMovieCatoegry = screenName
         }
     }
     
